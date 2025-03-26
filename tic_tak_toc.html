@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tic Tac Toe</title>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, rgb(113, 28, 241), rgba(225, 13, 225, 0.693));
+    font-family: Arial, sans-serif;
+  }
+
+  h1 {
+    font-size: 2.5em;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 5px;
+  }
+
+  .cell {
+    width: 100px;
+    height: 100px;
+    border: 2px solid #555;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5em;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+    box-shadow: 1px 1px 1px black;
+  }
+
+  .cell.X {
+    color: #ff6347; /* Tomato color for X */
+  }
+
+  .cell.O {
+    color: #4682b4; /* Steel blue for O */
+  }
+
+  #message {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.5em;
+    color: white;
+  }
+
+  #resetButton {
+    display: block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    font-size: 1.2em;
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  #resetButton:hover {
+    background-color: #e5533d;
+  }
+</style>
+</head>
+<body>
+
+<h1>Tic Tac Toe</h1>
+<div class="board" id="board">
+  <div class="cell" data-index="0"></div>
+  <div class="cell" data-index="1"></div>
+  <div class="cell" data-index="2"></div>
+  <div class="cell" data-index="3"></div>
+  <div class="cell" data-index="4"></div>
+  <div class="cell" data-index="5"></div>
+  <div class="cell" data-index="6"></div>
+  <div class="cell" data-index="7"></div>
+  <div class="cell" data-index="8"></div>
+</div>
+<div id="message"></div>
+<button id="resetButton">Reset Game</button>
+
+<script>
+  const board = document.getElementById('board');
+  const cells = document.querySelectorAll('.cell');
+  const message = document.getElementById('message');
+  const resetButton = document.getElementById('resetButton');
+
+  let currentPlayer = 'X';
+  let gameBoard = ['', '', '', '', '', '', '', '', ''];
+  let gameActive = true;
+
+  const winningCombinations = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  function handleCellClick(e) {
+    const cell = e.target;
+    const index = cell.dataset.index;
+
+    if (gameBoard[index] === '' && gameActive) {
+      gameBoard[index] = currentPlayer;
+      cell.textContent = currentPlayer;
+      cell.classList.add(currentPlayer);
+
+      if (checkWin()) {
+        message.textContent = `${currentPlayer} Wins!`; // Clean message without extra characters
+        gameActive = false;
+      } else if (checkDraw()) {
+        message.textContent = `It's a draw!`;
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        message.textContent = `Player ${currentPlayer}'s turn`;
+      }
+    }
+  }
+
+  function checkWin() {
+    for (const combination of winningCombinations) {
+      const [a, b, c] = combination;
+      if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+        cells[a].style.backgroundColor = '#90ee90'; // Light green for winning cells
+        cells[b].style.backgroundColor = '#90ee90';
+        cells[c].style.backgroundColor = '#90ee90';
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function checkDraw() {
+    return gameBoard.every((cell) => cell !== '');
+  }
+
+  function resetGame() {
+    gameBoard = ['', '', '', '', '', '', '', '', ''];
+    gameActive = true;
+    currentPlayer = 'X';
+    message.textContent = `Player ${currentPlayer}'s turn`;
+
+    cells.forEach((cell) => {
+      cell.textContent = '';
+      cell.classList.remove('X', 'O');
+      cell.style.backgroundColor = '#ffffff';
+    });
+  }
+
+  cells.forEach((cell) => {
+    cell.addEventListener('click', handleCellClick);
+  });
+
+  resetButton.addEventListener('click', resetGame);
+  message.textContent = `Player ${currentPlayer}'s turn`;
+</script>
+
+</body>
+</html>
